@@ -41,3 +41,10 @@ Finally, if everything exited successfully, you can now install the library
 ```
 sudo cp sudoers.so /usr/lib/sudo/sudoers.so
 ```
+
+Note: They may arise an error like
+```
+Job 1, 'sudo cp sudoers.so /usr/lib/sud…' terminated by signal SIGSEGV (Address boundary error)
+```
+
+when copying. This is kinda normal or doesn't influence the problem enough :D So just ignore it.
