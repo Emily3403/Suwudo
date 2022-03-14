@@ -1,27 +1,35 @@
-# UwU-ify your sudo experience.
+# girl-ify your sudo experience.
 
-Sudo answers are boring and assume the viewer is male. We can't have that.
+The default sudo insults assume the viewer is male. I've been increasingly offended by that and decided to change this
+behaviour.
 
-## How does it work
+## How does it work?
 
 For me recompiling sudo is a no-go. You open yourself up to all sorts of exploits, which I really don't want. So I have
 created an in-place modificator that works with the current sudo installation.
 
 This way we gain the benefit of not having to maintain an own sudo while still getting uwu output!
 
-## Backup
+## Danger mitigation: root shell
 
-Make sure to back up the original file first
+First make sure to open a root-shell just to be sure. You're messing with `sudo` here and, if you shoot yourself in the
+foot, you want to be able to recover. To do so type the following into your favorite shell
 
 ```shell
-sudo cp /usr/lib/sudo/sudoers.so ./sudoers.so.bak
+sudo su
 ```
 
-If any problems arise you can simply log in as the root user and copy the files back.
+Now just leave it open until the installation ends. If anything is fucked up, you can restore everything by typing the
+following
+*into the root shell*:
 
-## Install
+```shell
+cp /usr/lib/sudo/sudoers.so.bak /usr/lib/sudo/sudoers.so
+```
 
-First create your own patched library with
+## Installation
+
+Install with the following
 
 ```shell
 git clone --depth 1 https://github.com/Emily3403/Suwudo

@@ -1,0 +1,11 @@
+# Maintainer: Efaile <seebeckemily3403@gmail.com>
+
+pkgname=suwudo
+pkgver=0.0.1
+pkgrel=1
+pkgdesc="girl-ify your sudo experience!"
+url="https://github.com/Emily3403/Suwudo"
+
+
+arch=('i686' 'pentium4' 'x86_64' 'arm' 'armv7h' 'armv6h' 'aarch64')
+license=('GPL3')

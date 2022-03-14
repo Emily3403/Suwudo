@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 # These may be edited to your liking
+import os
+
 custom_insults = [
     b"^-^ Juwst whawt duwu uwu think uwu'we doing Emily? :3",
     b"uwu Iwt cawn onwy be attwibuted tooo human ewwow. <3",
@@ -119,7 +121,11 @@ def get_mapping_all_to_custom():
     return mapping
 
 
-def startup() -> None:
+
+def main() -> None:
+    print("Backing up the previous library:")
+    os.system("sudo cp /usr/lib/sudo/sudoers.so /usr/lib/sudo/sudoers.so.bak")
+
     print("Generating sudoers.so from `/usr/lib/sudo/sudoers.so`")
 
     with open("/usr/lib/sudo/sudoers.so", "rb") as f:
@@ -133,10 +139,6 @@ def startup() -> None:
         f.write(content)
 
     print("Successfully generated sudoers.so. Now install it with\n\nsudo cp sudoers.so /usr/lib/sudo/sudoers.so")
-
-
-def main() -> None:
-    startup()
 
 
 if __name__ == '__main__':
