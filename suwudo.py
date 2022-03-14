@@ -157,11 +157,7 @@ def get_mapping():
 
 
 def main() -> None:
-    print("Backing up the previous library ...")
-    os.system(f"sudo cp /usr/lib/sudo/sudoers.so /usr/lib/sudo/sudoers.so.bak.{int(datetime.now().timestamp())}")
-    print("Done backing up!\n\nBuilding binary ...")
-
-    with open("/usr/lib/sudo/sudoers.so.bak", "rb") as f:
+    with open("/usr/lib/sudo/sudoers.so", "rb") as f:
         content = f.read()
         mapping = get_mapping()
 
@@ -171,8 +167,7 @@ def main() -> None:
     with open("./sudoers.so", "wb") as f:
         f.write(content)
 
-    os.system("sudo cp ./sudoers.so /usr/lib/sudo/sudoers.so")
-    print("Sucessfully installed!")
+    print("Sucessfully generated!")
 
 
 if __name__ == '__main__':
