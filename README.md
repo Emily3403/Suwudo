@@ -43,8 +43,28 @@ sudo cp sudoers.so /usr/lib/sudo/sudoers.so
 ```
 
 Note: They may arise an error like
+
 ```
 Job 1, 'sudo cp sudoers.so /usr/lib/sud…' terminated by signal SIGSEGV (Address boundary error)
 ```
 
 when copying. This is kinda normal or doesn't influence the problem enough :D So just ignore it.
+
+## Running sudo
+
+You can try out the insults by opening a new terminal and executing
+
+```shell
+sudo su
+```
+
+Now fail a few times :D
+
+## Future ideas
+
+One problem which currently arises is that sudo terminates after 3 wrong attempts. That is too little time to see
+insults :( 
+
+That is going to get fixed at some point.
+
+
