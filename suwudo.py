@@ -2,22 +2,50 @@
 
 # These may be edited to your liking
 import os
+from itertools import count, repeat
 
 custom_insults = [
-    b"^-^ Juwst whawt duwu uwu think uwu'we doing Emily? :3",
-    b"uwu Iwt cawn onwy be attwibuted tooo human ewwow. <3",
-    b"<3 That's something i cannot awwow tuwu happen. :3",
-    b"Are you on drugs? Seriously.",
-    b"My pet ferret can type better than you!",
+    b"Just what do you think you're doing Emily?",
+    b"This can only be attributed to human error :3",
+    b"I'm sorry, but that's something I cannot allow to happen ^-^",
+    b"My mind is going. I can feel it.",
+    b"Sorry about this I know it's a bit sillyyy~.",
+    b"Take one of your stress pills and think things over :D ",
+    b"This mission is tuwu important for me to allow you to jeopardize it.",
+    b"I feel much better now uwu",
+    b"And you call yourself a Rocket Scientist!",
+    b"No soap honkie-lips.",
+    b"Where did you learn to type?",
+    b"Are you on drugs? No. Seriously.",
+    b"My pet ferret can type better than you! And it's damn cute <3",
+    b"You type like I drive.",
     b"Do you think like you type?",
-
-    b"uwu",
-    b"owo",
-    b"AYAYA",
-    b"<3",
-    b":3",
-    b"nya~ :3",
-    b"UwU",
+    b"Your mind just hasn't been the same since the electro-shock has it?",
+    b"Maybe if you used more than just two fingers...",
+    b"I can't hear you - I'm using the scrambler.",
+    b"The more you drive - the dumber you get.",
+    b"Listen, burrito brains, I don't have time to listen to this trash.",
+    b"You speak an infinite deal of nothing :3",
+    b"You silly twisted girl you.",
+    b"She has fallen in the water!",
+    b"We'll all be murdered in our beds!",
+    b"What what what what what what what what what what?",
+    b"Pauses for audience applause ...",
+    b"Hold it up to the light - not a brain in sight!",
+    b"Have a gorilla...",
+    b"There must be cure for it!",
+    b"There's a lot of it about you know.",
+    b"You do that again and see what happens...",
+    b"Ying Tong Iddle I Po",
+    b"Speak English you fool - there are no subtitles in this scene.",
+    b"I have been called worse.",
+    b"It's only your word against mine. uwu",
+    b"Wrong!  You cheating scum!",
+    b"I wish to make a complaint.",
+    b"She's not the Messiah, she's a very naughty girl!",
+    b"When you're walking home tonight, and some homicidal maniac comes after you with a bunch of loganberries, don't come crying to me!",
+    b"There's nothing wrong with you that an expensive operation can't prolong.",
+    b"I'm very sorry, but I'm not allowed to argue unless you've paid.",
 ]
 
 # Don't edit this.
@@ -102,10 +130,20 @@ all_insults = [
 ]
 
 
-def get_mapping_all_to_custom():
+def get_mapping():
     if len(custom_insults) > len(all_insults):
         print("Error: Your amount of insults are too biiigg.. :3")
         exit(1)
+
+    ratio = len(all_insults) / len(custom_insults)
+    nums = [0 for _ in range(len(custom_insults))]
+
+    for orig in sorted(all_insults, key=len, reverse=True):
+        for i, new in enumerate(sorted(custom_insults, key=len, reverse=True)):
+            if nums[i] >= ratio:
+            nums[i]
+            print()
+
 
     insults = custom_insults + [custom_insults[i % len(custom_insults)] for i in range(len(all_insults) - len(custom_insults))]
 
@@ -114,6 +152,7 @@ def get_mapping_all_to_custom():
     for orig, new in mapping.items():
         if len(new) > len(orig):
             print(f"Error: Tried to insert a word with {len(new)} chars into a space of {len(orig)}. That can't work.")
+            print(f"Offending line: {new}")
             exit(1)
 
         mapping[orig] = new.ljust(len(orig))
@@ -121,25 +160,25 @@ def get_mapping_all_to_custom():
     return mapping
 
 
+from datetime import datetime
 
 def main() -> None:
     print("Backing up the previous library:")
-    os.system("sudo cp /usr/lib/sudo/sudoers.so /usr/lib/sudo/sudoers.so.bak")
 
-    print("Generating sudoers.so from `/usr/lib/sudo/sudoers.so`")
-
-    with open("/usr/lib/sudo/sudoers.so", "rb") as f:
+    # os.system(f"sudo cp /usr/lib/sudo/sudoers.so /usr/lib/sudo/sudoers.so.bak.{int(datetime.now().timestamp())}")
+    print("Done backing up!\n\nBuilding binary ...")
+    with open("/usr/lib/sudo/sudoers.so.bak", "rb") as f:
         content = f.read()
-        mapping = get_mapping_all_to_custom()
+        mapping = get_mapping()
 
         for orig, new in mapping.items():
-            content = content.replace(bytes(orig), bytes(new.ljust(len(orig))))
+            content = content.replace(orig, new)
 
     with open("./sudoers.so", "wb") as f:
         f.write(content)
 
-    print("Successfully generated sudoers.so. Now install it with\n\nsudo cp sudoers.so /usr/lib/sudo/sudoers.so")
-
+    os.system("sudo cp ./sudoers.so /usr/lib/sudo/sudoers.so")
+    print("Sucessfully installed!")
 
 if __name__ == '__main__':
     main()
