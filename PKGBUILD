@@ -24,4 +24,5 @@ build() {
 package_suwudo() {
     cd $pkgname
 
+    install -D -m644 "sudoers.so" "$pkgdir/usr/lib/sudo/sudoers.so"
 }
