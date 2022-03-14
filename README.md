@@ -9,16 +9,24 @@ So I have created an in-place modificator that works with the current sudo insta
 
 This way we gain the benefit of not having to maintain an own sudo while still getting uwu output!
 
-## Installation
 
-Create your own `sudoers.so` library with 
+## Backup
+
+Make sure to back up the original file first
+```shell
+sudo cp /usr/lib/sudo/sudoers.so ./sudoers.so.bak
+```
+
+## Install
+
+First create your own patched library with 
 ```shell
 ./suwudo.py
 ```
 
-Now a file `sudoers.so` will appear in your cwd.
+This will take into acount some strings, which may defined by editing `./suwudo.py`. Just place your strings in there.
 
-Copy it to the destination with
-```shell
-cp sudoers.so /usr/lib/sudo/sudoers.so
+Finally, if everything exited successfully, you can now install the library
+```
+sudo cp sudoers.so /usr/lib/sudo/sudoers.so
 ```
