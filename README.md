@@ -62,9 +62,6 @@ Now fail a few times :D
 
 ## Future ideas
 
-One problem which currently arises is that sudo terminates after 3 wrong attempts. That is too little time to see
-insults :( 
-
-That is going to get fixed at some point.
-
-
+- sudo terminates after 3 wrong attemds
+- Bring this to the arch user repository
+- ansible config
