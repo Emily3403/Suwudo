@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 # These may be edited to your liking
+import math
 import os
-from itertools import count, repeat
+from datetime import datetime
 
 custom_insults = [
     b"Just what do you think you're doing Emily?",
@@ -36,7 +37,6 @@ custom_insults = [
     b"There must be cure for it!",
     b"There's a lot of it about you know.",
     b"You do that again and see what happens...",
-    b"Ying Tong Iddle I Po",
     b"Speak English you fool - there are no subtitles in this scene.",
     b"I have been called worse.",
     b"It's only your word against mine. uwu",
@@ -46,7 +46,11 @@ custom_insults = [
     b"When you're walking home tonight, and some homicidal maniac comes after you with a bunch of loganberries, don't come crying to me!",
     b"There's nothing wrong with you that an expensive operation can't prolong.",
     b"I'm very sorry, but I'm not allowed to argue unless you've paid.",
+    b"<3",
+    b"Not today girl!",
+    b"uwu :3",
 ]
+
 
 # Don't edit this.
 all_insults = [
@@ -93,7 +97,6 @@ all_insults = [
     b"You do that again and see what happens...",
     b"Ying Tong Iddle I Po",
     b"Harm can come to a young lad like that!",
-    b"And with that remarks folks the case of the Crown vs yourself was proven.",
     b"Speak English you fool - there are no subtitles in this scene.",
     b"You gotta go owwwww!",
     b"I have been called worse.",
@@ -135,50 +138,42 @@ def get_mapping():
         print("Error: Your amount of insults are too biiigg.. :3")
         exit(1)
 
-    ratio = len(all_insults) / len(custom_insults)
+    ratio = math.ceil(len(all_insults) / len(custom_insults))
     nums = [0 for _ in range(len(custom_insults))]
+    mapping = {}
 
-    for orig in sorted(all_insults, key=len, reverse=True):
+    for old in sorted(all_insults, key=len, reverse=True):
         for i, new in enumerate(sorted(custom_insults, key=len, reverse=True)):
-            if nums[i] >= ratio:
-            nums[i]
-            print()
-
-
-    insults = custom_insults + [custom_insults[i % len(custom_insults)] for i in range(len(all_insults) - len(custom_insults))]
-
-    mapping = {k: v for k, v in zip(sorted(all_insults, key=len, reverse=True), sorted(insults, key=len, reverse=True))}
-
-    for orig, new in mapping.items():
-        if len(new) > len(orig):
-            print(f"Error: Tried to insert a word with {len(new)} chars into a space of {len(orig)}. That can't work.")
-            print(f"Offending line: {new}")
-            exit(1)
-
-        mapping[orig] = new.ljust(len(orig))
+            if nums[i] < ratio and len(new) <= len(old):
+                # Use the entry
+                nums[i] += 1
+                mapping[old] = new.ljust(len(old))
+                break
+        else:
+            print(f"Error: unfulfillable quote: {old}. Replacing it with the default text \"uwu\"")
+            mapping[old] = b"uwu".ljust(len(old))
 
     return mapping
 
 
-from datetime import datetime
-
 def main() -> None:
-    print("Backing up the previous library:")
-
-    # os.system(f"sudo cp /usr/lib/sudo/sudoers.so /usr/lib/sudo/sudoers.so.bak.{int(datetime.now().timestamp())}")
+    print("Backing up the previous library ...")
+    os.system(f"sudo cp /usr/lib/sudo/sudoers.so /usr/lib/sudo/sudoers.so.bak.{int(datetime.now().timestamp())}")
     print("Done backing up!\n\nBuilding binary ...")
+
     with open("/usr/lib/sudo/sudoers.so.bak", "rb") as f:
         content = f.read()
         mapping = get_mapping()
 
-        for orig, new in mapping.items():
-            content = content.replace(orig, new)
+        for old, new in mapping.items():
+            content = content.replace(old, new)
 
     with open("./sudoers.so", "wb") as f:
         f.write(content)
 
     os.system("sudo cp ./sudoers.so /usr/lib/sudo/sudoers.so")
     print("Sucessfully installed!")
+
 
 if __name__ == '__main__':
     main()
