@@ -3,6 +3,7 @@
 # These may be edited to your liking
 import math
 import os
+from collections import defaultdict
 from datetime import datetime
 
 custom_insults = [
@@ -139,14 +140,16 @@ def get_mapping():
         exit(1)
 
     ratio = math.ceil(len(all_insults) / len(custom_insults))
-    nums = [0 for _ in range(len(custom_insults))]
+    nums = defaultdict(int)
     mapping = {}
 
     for old in sorted(all_insults, key=len, reverse=True):
-        for i, new in enumerate(sorted(custom_insults, key=len, reverse=True)):
-            if nums[i] < ratio and len(new) <= len(old):
-                # Use the entry
-                nums[i] += 1
+        for new in sorted(custom_insults, key=len, reverse=True):
+            if nums[new] < ratio:
+                continue
+
+            if len(new) <= len(old):
+                nums[new] += 1
                 mapping[old] = new.ljust(len(old))
                 break
         else:
