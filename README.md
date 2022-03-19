@@ -40,11 +40,11 @@ cd Suwudo
 ## How does it work?
 
 According to [this](https://unix.stackexchange.com/a/81719) Stackoverflow post the only way to create custom insults is
-by recompiling sudo from source.
+by recompiling `sudo` from source.
 
 ### Why is this bad?
 
-If you compile and maintain your own sudo you may be vulnerable to a 0-Day exploit. You can mitigate this by always
+If you compile and maintain your own `sudo` you may be vulnerable to a 0-Day exploit. You can mitigate this by always
 keeping it up to date, but this design is not secure by default.
 
 ### So how does it work?
