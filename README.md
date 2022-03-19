@@ -6,6 +6,8 @@ The default sudo insults assume the viewer is male. I've been increasingly annoy
 behaviour. The only way to set your own insults is by setting `badpass_message`. This has the limitation of being a
 single, hard-coded message rather than a list of insults.
 
+So I've decided to create my own workaround.
+
 ## Installation
 
 ## Danger mitigation: root shell
