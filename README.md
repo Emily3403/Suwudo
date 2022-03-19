@@ -21,7 +21,7 @@ To create a new root shell type the following into your favorite shell
 sudo su
 ```
 
-Now just leave it open until the installation ends. If anything broke, you can type the following into the root shell
+Now just leave it open until the installation ends. If anything breaks, you can recover by executing
 
 ```shell
 cp /home/{your username}/.cache/sudo/sudoers.so.bak /usr/lib/sudo/sudoers.so
