@@ -1,30 +1,28 @@
-# girl-ify your sudo experience.
+# Girl-ify your sudo experience
 
-The default sudo insults assume the viewer is male. I've been increasingly offended by that and decided to change this
-behaviour.
+## Motivation
 
-## How does it work?
+The default sudo insults assume the viewer is male. I've been increasingly annoyed by that and decided to change this
+behaviour. The only way to set your own insults is by setting `badpass_message`. This has the limitation of being a
+single, hard-coded message rather than a list of insults.
 
-For me recompiling sudo is a no-go. You open yourself up to all sorts of exploits, which I really don't want. So I have
-created an in-place modificator that works with the current sudo installation.
-
-This way we gain the benefit of not having to maintain an own sudo while still getting uwu output!
+## Installation
 
 ## Danger mitigation: root shell
 
 First make sure to open a root-shell just to be sure. You're messing with `sudo` here and, if you shoot yourself in the
-foot, you want to be able to recover. To do so type the following into your favorite shell
+foot, you want to be able to recover that easily.
+
+To create a new root shell type the following into your favorite shell
 
 ```shell
 sudo su
 ```
 
-Now just leave it open until the installation ends. If anything is fucked up, you can restore everything by typing the
-following
-*into the root shell*:
+Now just leave it open until the installation ends. If anything broke, you can type the following into the root shell
 
 ```shell
-cp /usr/lib/sudo/sudoers.so.bak /usr/lib/sudo/sudoers.so
+cp /home/{your username}/.cache/sudo/sudoers.so.bak /usr/lib/sudo/sudoers.so
 ```
 
 ## Installation
@@ -32,31 +30,28 @@ cp /usr/lib/sudo/sudoers.so.bak /usr/lib/sudo/sudoers.so
 Install with the following
 
 ```shell
-git clone --depth 1 https://github.com/Emily3403/Suwudo
+git clone https://github.com/Emily3403/Suwudo
 cd Suwudo
+./install.sh
 ```
 
-Now you could make changes to the strings for example uwu-ify them even more ^-^
+## How does it work?
 
-To create the library run
+According to [this](https://unix.stackexchange.com/a/81719) Stackoverflow post the only way to create custom insults is
+by recompiling sudo from source.
 
-```
-./suwudo.py
-```
+### Why is this bad?
 
-Finally, if everything exited successfully, you can now install the library
+If you compile and maintain your own sudo you may be vulnerable to a 0-Day exploit. You can mitigate this by always
+keeping it up to date, but this design is not secure by default.
 
-```
-sudo cp sudoers.so /usr/lib/sudo/sudoers.so
-```
+### So how does it work?
 
-Note: They may arise an error like
+The `sudo` binary depends on a shared object located at `/usr/lib/sudo/sudoers.so`. In it various thing are defined, for
+example the default insults. You can check them out by opening the object with any text editor and searching for the
+string "Dave". It will take you directly to the place where all the insults are stored.
 
-```
-Job 1, 'sudo cp sudoers.so /usr/lib/sud…' terminated by signal SIGSEGV (Address boundary error)
-```
-
-when copying. This is kinda normal or doesn't influence the problem enough :D So just ignore it.
+Now we can simply replace the offending characters by new ones.
 
 ## Running sudo
 

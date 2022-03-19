@@ -2,3 +2,5 @@ sudoers.so
 venv
 .dmypy.json
 .idea
+
+aur/
