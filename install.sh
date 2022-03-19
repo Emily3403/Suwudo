@@ -3,7 +3,7 @@
 # Backup the current sudoers.so
 mkdir -p ~/.cache/sudo
 cp /usr/lib/sudo/sudoers.so "$HOME/.cache/sudo/sudoers.so.bak.$(date +%s)"
-ln -s "$HOME/.cache/sudo/sudoers.so.bak.$(date +%s)" "$HOME/.cache/sudo/sudoers.so.bak"
+ln -fs "$HOME/.cache/sudo/sudoers.so.bak.$(date +%s)" "$HOME/.cache/sudo/sudoers.so.bak"
 
 # This wierd construction silences the segfault error
 # https://stackoverflow.com/a/28522034
