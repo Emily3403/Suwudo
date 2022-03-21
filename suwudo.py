@@ -231,7 +231,7 @@ def main() -> None:
         print("Error: Your amount of insults are too biiigg.. :3")
         exit(1)
 
-    with open("/usr/lib/sudo/sudoers.so.bak", "rb") as f:
+    with open("/usr/lib/sudo/sudoers.so", "rb") as f:
         content = f.read()
 
     # show_hist()
