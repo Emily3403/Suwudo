@@ -8,6 +8,7 @@ single, hard-coded message rather than a list of insults.
 
 So I've decided to create my own workaround.
 
+#### This is  how it looks
 ![This is how is looks](./Screenshots/Image.png)
 
 ## Installation
@@ -76,3 +77,8 @@ sudo su
 
 Now fail a few times :D
 
+
+## Contributing
+
+If you have any ideas on new insults or improvements for existing ones feel free to submit a pull request. They
+are greatly appreciated.

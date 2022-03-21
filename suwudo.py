@@ -61,6 +61,23 @@ you deserve this ! ♥""",
 
 ]
 
+static_mapping = {
+    b"""We trust you have received the usual lecture from the local System
+Administrator. It usually boils down to these three things:
+
+    #1) Respect the privacy of others.
+    #2) Think before you type.
+    #3) With great power comes great responsibility.
+""":
+        b"""We twust that u weceived the uwusuwal wecture fwom the local System
+Adwinistwator. It uwusualy boils down to thees thwee things:
+
+    #1) wespect the pwivacy of others.
+    #2) Think before u type.
+    #3) With gweat power comes gweat wesponsibiwity.
+""",
+}
+
 ### DON'T EDIT ###
 
 
@@ -231,7 +248,7 @@ def main() -> None:
         print("Error: Your amount of insults are too biiigg.. :3")
         exit(1)
 
-    with open("/usr/lib/sudo/sudoers.so", "rb") as f:
+    with open("/usr/lib/sudo/sudoers.so.bak", "rb") as f:
         content = f.read()
 
     # show_hist()
@@ -240,6 +257,7 @@ def main() -> None:
 
     print("Generating the mapping... This might take a second\n")
     mapping = find_mapping_random()
+    mapping |= static_mapping
 
     mapping = {k: v.ljust(len(k)) for k, v in mapping.items()}
 
@@ -268,6 +286,8 @@ def main() -> None:
 # - sudo terminates after 3 wrong attempts
 # - Bring this to the arch user repository
 # - ansible config
+
+# TODO: Test this on different VM's
 
 if __name__ == '__main__':
     main()
