@@ -41,6 +41,13 @@ cd Suwudo
 ./install.sh
 ```
 
+You will also have to enable insults for `sudo` if you haven't already.
+Do so by adding the following to your `/etc/sudoers` file
+
+```
+Defaults insults
+```
+
 ## How does it work?
 
 According to [this](https://unix.stackexchange.com/a/81719) Stackoverflow post the only way to create custom insults is
