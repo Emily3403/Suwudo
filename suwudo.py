@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 
 # These may be edited to your liking
+import json
 import math
 import random
 import re
 import sys
 import time
 from collections import defaultdict
+from multiprocessing import Pool
 from statistics import variance
-from typing import DefaultDict, Dict, List, Set
+from typing import DefaultDict, Dict, List, Set, Tuple
 
 # This is the list of custom insults. You may replace any one of them.
 # Unicode etc. should work if your terminal supports it. Mine does.
@@ -28,7 +30,7 @@ _custom_insults: List[str] = [
     "You silly twisted girl you 💞",
 
     # Custom insults
-    "<3",
+    "Love you <3",
     "Not today girl!",
     "uwu :3",
     "ʘwʘ",
@@ -42,13 +44,13 @@ _custom_insults: List[str] = [
     """With love 💗
  /)   /)
 ( ᵔ ᵕ ᵔ )
-/ づ  づ ~ 💖
+/ づ  づ ~ 💖\
 """,
 
     """\
 /)  /)
 ( •-• ) <(i want a hug pwease 💖)
-/づづ
+/づづ\
     """,
 
     """\
@@ -125,166 +127,27 @@ all_insults = [
     b"I'm very sorry, but I'm not allowed to argue unless you've paid.",
 ]
 
-# If there is nothing that fits this quote, replace it by ↓
-default_quote = "uwu"
-
 # Sort the existing lists, so we can abuse that for the algorithm
 custom_insults = sorted([item.encode() for item in _custom_insults], key=len)
 all_insults = sorted([item for item in all_insults], key=len)
 
+# Will stop the algorithm after ↓ unsuccessful attempts
+stop_after_iterations = 45
+
+# Set the seed to something preselected. This will guarantee a good mapping.
+random.seed(1106)
 
 
-# # Mapping explore constants
-# bucket_size = 1
-# recursive_explore_size = 10
-#
-# num_buckets = math.ceil(max((len(insult) for insult in all_insults)) / bucket_size + 1)
-#
-# all_solutions: Set[Dict[int, List[int]]] = set()
-# already_visited: Set[int] = set()
-# custom_insults_len = len(custom_insults)
-#
-#
-# for item in all_insults:
-#     # Make sure there is at lease one item that *could* fit
-#     assert any(len(item) // bucket_size >= math.ceil(len(insult) / bucket_size) for insult in custom_insults), \
-#         f"There are no quotes that fit into {item.decode()!r}. Please adapt the bucket size / custom insults"
-
-
-# from numba import njit
-
-
-# @njit(parallel=True)
-# def add_packed_num(num: int, new_num: int) -> int:
-#     nn = num + (new_num << 8 * math.ceil(math.log(num + 1, 2 ** 8)))
-#     print(bin(nn))
-#     return nn
-
-
-# @profile
-
-
-# @njit(parallel=True)
-# def _find_mapping_recursive(buckets: List[int], current_solution: Dict[int, int], index: int, done=0) -> None:
-#     if custom_insults_len - done < custom_insults_len - sum(map(bool, current_solution)):
-#         return
-#
-#     base_bucket = math.ceil(len(custom_insults[index]) / bucket_size)
-#
-#     for i in range(recursive_explore_size):
-#         if base_bucket + i >= num_buckets:
-#             break
-#
-#         if buckets[base_bucket + i] > 0:
-#             buckets[base_bucket + i] -= 1
-#             current_solution[index] = add_packed_num(current_solution[index], base_bucket + i)
-#             done += 1
-#
-#             if done == custom_insults_len:
-#                 # Correct solution
-#                 # all_solutions.add(copy.deepcopy(current_solution))
-#                 pass
-#             else:
-#                 new_index = index
-#                 while new_index < custom_insults_len:
-#                     _find_mapping_re(buckets, current_solution, new_index, done)
-#                     new_index += 1
-#
-#             buckets[base_bucket + i] += 1
-#             current_solution[index].pop(-1)
-#             done -= 1
-
-
-# def find_mapping_recursive() -> Dict[bytes, bytes]:
-#     buckets = [0 for _ in range(num_buckets)]
-#     max_nums = [0 for _ in range(num_buckets)]
-#     current_solution: List[List[int]] = [[0] for _ in range(custom_insults_len)]
-#     # solution = numba.typed.Dict.empty(key_type=int, value_type=list)
-#
-#     for item in all_insults:
-#         max_nums[len(item) // bucket_size] += 1
-#
-#     s = time.perf_counter()
-#     i = 0
-#     while i < custom_insults_len:
-#         # _find_mapping_recursive(max_nums, {i: 0 for i in range(custom_insults_len)}, i)
-#         i += 1
-#     print(f"Took {time.perf_counter() - s:.3f}s")
-#
-#     # Now generate all possible mappings
-#     mappings = []
-#     for solution in all_solutions:
-#         cur_map = {}
-#         bucket_map = defaultdict(list)
-#         for item in all_insults:
-#             bucket_map[len(item) // bucket_size].append(item)
-#
-#         for i, insult_nums in enumerate(solution):
-#             for bucket_num in insult_nums:
-#                 cur_map[bucket_map[bucket_num].pop()] = custom_insults[i]
-#
-#         for k, v in cur_map.items():
-#             assert len(v) <= len(k)
-#
-#         mappings.append(cur_map)
-#
-#     print(f"Generated {len(mappings)} mappings")
-#     # print(json.dumps([{k.decode(): v.decode() for k, v in mapping.items()} for mapping in mappings], indent=4))
-#     exit(0)
-#
-#     # for item in mappings:
-#     #     print(f"The variance is {variance(map(custom_insults.index, item.values())):.3f}")
-#     pass
-#
-#     return mappings[0]
-
-
-def find_mapping_bad() -> Dict[bytes, bytes]:
-    ratio = math.ceil(len(all_insults) / custom_insults_len)
-    nums: DefaultDict[bytes, int] = defaultdict(int)
-    mapping: Dict[bytes, bytes] = {}
-
-    for old in sorted(all_insults, key=len, reverse=True):
-        for new in sorted(custom_insults, key=len, reverse=True):
-            if nums[new] > ratio:
-                continue
-
-            if len(new) <= len(old):
-                nums[new] += 1
-                mapping[old] = new.ljust(len(old))
-                break
-        else:
-            print(f"Error: unfulfillable quote: {old!r}. Replacing it with the default text {default_quote}")
-            mapping[old] = default_quote.encode().ljust(len(old))
-
-    return mapping
-
-
-# if "profile" not in globals():
-#     def profile(_):
-#         return _
-
-
-# @profile
-
-random_explore_size = 20
-random_no_hit_stop_criterion = 50
-
-random.seed(6)
-
-
-# @profile
 def find_mapping_random() -> Dict[bytes, bytes]:
     insult_nums = [0 for _ in range(len(custom_insults))]
     solution: Dict[int, Set[int]] = {i: set() for i in range(len(custom_insults))}
     back_mapping = {i: 0 for i in range(len(all_insults))}
-    insults_lengths = [len(item) for item in custom_insults]
 
     insult_nums[0] = len(all_insults)
     solution[0] = set(range(len(all_insults)))
 
     i = 0
-    while i < random_no_hit_stop_criterion:
+    while i < stop_after_iterations:
         to_improve = random.randint(0, len(all_insults) - 1)
         new_index = random.randint(0, len(custom_insults) - 1)
 
@@ -317,21 +180,43 @@ def find_mapping_random() -> Dict[bytes, bytes]:
     return mapping
 
 
+def _wasted_space(seed: int) -> Tuple[int, int]:
+    random.seed(seed)
+    mapping = find_mapping_random()
+    return seed, sum(len(item) for item in mapping.keys()) - sum(len(item) for item in mapping.values())
+
+
+def find_least_space_wasted() -> None:
+    s = time.perf_counter()
+    with Pool(16) as ex:
+        nums = ex.map(_wasted_space, range(3000))
+
+    best = sorted(nums, key=lambda x: x[1])[0]
+    print(f"Done in {time.perf_counter() - s:.3f}s")
+    print(f"Best seed: {best[0]}, wasted: {best[1]}")
+
+
 def bruteforce_random_seed() -> None:
-    for i in range(100):
+    best_wasted = -1
+    best = 0
+    for i in range(10):
         s = time.perf_counter()
         random.seed(i)
         mapping = find_mapping_random()
+        wasted_space = sum(len(item) for item in mapping.keys()) - sum(len(item) for item in mapping.values())
+        if wasted_space < best_wasted or best_wasted == -1:
+            best = i
+            best_wasted = wasted_space
+
         nums = [list(mapping.values()).count(item) for item in custom_insults]
+
         print(f"Done in {time.perf_counter() - s:.3f}s")
         print(f"The variance is {variance(nums):.3f}, seed is {i}")
+        print(f"Wasted space: {wasted_space}")
         print(nums)
-        # print(f"Not hit:")
-        # for i, item in enumerate(nums):
-        #     if item == 0:
-        #         print(custom_insults[i])
-
         print()
+
+    print(f"Best seed: {best}")
 
 
 def show_hist() -> None:
@@ -350,11 +235,12 @@ def main() -> None:
         content = f.read()
 
     # show_hist()
-    bruteforce_random_seed()
+    # find_least_space_wasted()
+    # bruteforce_random_seed()
 
+    print("Generating the mapping... This might take a second\n")
     mapping = find_mapping_random()
 
-    mapping |= static_mapping
     mapping = {k: v.ljust(len(k)) for k, v in mapping.items()}
 
     # Make sure that sudo won't crash afterwards
@@ -368,18 +254,20 @@ def main() -> None:
 
     new_nums = {custom_insult.decode(): content.count(custom_insult) for custom_insult in custom_insults}
 
+    print("\nI've achieved the following distribution:\n")
+    print("{")
+    for st, count in new_nums.items():
+        print(f"    {st}: {count},")
+    print("}")
+
     with open("./sudoers.so", "wb") as f:
         f.write(content)
 
-    print("Sucessfully generated!")
-    print("I've achieved the following distribution:\n")
-    print("{")
-    for k, v in new_nums.items():
-        print(f"    {k!r}: {v!r},")
-    print("}")
-    if len(new_nums) >= 2:
-        print(f"\nThe variance is {variance(new_nums.values()):.3f}")
 
+# Future ideas
+# - sudo terminates after 3 wrong attempts
+# - Bring this to the arch user repository
+# - ansible config
 
 if __name__ == '__main__':
     main()

@@ -8,6 +8,8 @@ single, hard-coded message rather than a list of insults.
 
 So I've decided to create my own workaround.
 
+![This is how is looks](./Screenshots/Image.png)
+
 ## Installation
 
 ## Danger mitigation: root shell
@@ -57,7 +59,7 @@ string "Dave". It will take you directly to the place where all the insults are 
 
 Now we can simply replace the offending characters by new ones.
 
-## Running sudo
+## Testing the new insults
 
 You can try out the insults by opening a new terminal and executing
 
@@ -67,8 +69,3 @@ sudo su
 
 Now fail a few times :D
 
-## Future ideas
-
-- sudo terminates after 3 wrong attemds
-- Bring this to the arch user repository
-- ansible config
