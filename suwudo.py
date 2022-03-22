@@ -265,7 +265,7 @@ def main() -> None:
         print("Error: Your amount of insults are too biiigg.. :3")
         exit(1)
 
-    with open("/usr/lib/sudo/sudoers.so", "rb") as f:
+    with open("/usr/lib/sudo/sudoers.so.bak", "rb") as f:
         content = f.read()
 
     # show_hist()
@@ -282,8 +282,13 @@ def main() -> None:
 
     # Replace all old strings with new opes in *only 1 pass*
     # Copied from https://stackoverflow.com/a/15175239
-    regex = re.compile(b"(%s)" % b"|".join(map(re.escape, mapping.keys())))
-    content = regex.sub(lambda mo: mapping[mo.string[mo.start():mo.end()]], content)
+
+    # Unfortunately this produced wrong code. I don't know why.
+    # regex = re.compile(b"(%s)" % b"|".join(map(re.escape, mapping.keys())))
+    # content = regex.sub(lambda mo: mapping[mo.string[mo.start():mo.end()]], content)
+
+    for old, new in mapping.items():
+        content = content.replace(old, new)
 
     new_nums = {custom_insult.decode(): content.count(custom_insult) for custom_insult in custom_insults}
 
