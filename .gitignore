@@ -2,5 +2,6 @@ sudoers.so
 venv
 .dmypy.json
 .idea
+pypy3.9-v7.3.8-linux64
 
 aur/

@@ -235,7 +235,7 @@ def _wasted_space(seed: int) -> Tuple[int, int, int]:
 def bruteforce_random_seed() -> None:
     s = time.perf_counter()
     with Pool(16) as ex:
-        nums = ex.map(_wasted_space, range(300000))
+        nums = ex.map(_wasted_space, range(30000))
 
     min_var = min(nums, key=lambda x: x[2])[2]
     best = sorted(nums, key=lambda x: x[1] if x[2] == min_var else 999999)[0]
