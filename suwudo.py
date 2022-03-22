@@ -156,6 +156,9 @@ random.seed(8557)
 
 
 def find_mapping_random_improvement() -> Dict[bytes, bytes]:
+    """
+    This algorithm is kinda shitty. I'll leave it here to compare against.
+    """
     insult_nums = [0 for _ in range(len(custom_insults))]
     solution: Dict[int, Set[int]] = {i: set() for i in range(len(custom_insults))}
     back_mapping = {i: 0 for i in range(len(all_insults))}
@@ -218,70 +221,35 @@ def find_mapping_random_guesses() -> Dict[bytes, bytes]:
     return mapping
 
 
+mapping_algorithm = find_mapping_random_guesses
+
+
 def _wasted_space(seed: int) -> Tuple[int, int, int]:
     random.seed(seed)
-    mapping = find_mapping_random_guesses()
+    mapping = mapping_algorithm()
     lst = list(mapping.values())
     nums = [lst.count(item) for item in custom_insults]
     return seed, sum(len(item) for item in mapping.keys()) - sum(len(item) for item in mapping.values()), variance(nums)
 
 
-# Best: 753
-# Best var = 0.807
-
-def find_least_space_wasted() -> None:
+def bruteforce_random_seed() -> None:
     s = time.perf_counter()
     with Pool(16) as ex:
-        nums = ex.map(_wasted_space, range(30000))
+        nums = ex.map(_wasted_space, range(300000))
 
-
-    best = sorted(nums, key=lambda x: x[1] if 0.8 < x[2] < 0.82 else 999)[0]
+    min_var = min(nums, key=lambda x: x[2])[2]
+    best = sorted(nums, key=lambda x: x[1] if x[2] == min_var else 999999)[0]
     print(f"Done in {time.perf_counter() - s:.3f}s")
     print(f"Seed is {best[0]}")
 
     random.seed(best[0])
-    mapping = find_mapping_random_guesses()
+    mapping = mapping_algorithm()
     wasted_space = sum(len(item) for item in mapping.keys()) - sum(len(item) for item in mapping.values())
     nums = [list(mapping.values()).count(item) for item in custom_insults]
 
-    print(f"The variance is {variance(nums):.3f}")
-    print(f"Wasted space: {wasted_space}")
+    print(f"Seed: {best[0]}, variance: {variance(nums):.3f}, wasted space: {wasted_space}")
     print(nums)
 
-    exit(0)
-
-
-def bruteforce_random_seed() -> None:
-    best_wasted = -1
-    best = 0
-    s = time.perf_counter()
-    for i in range(10000):
-
-        random.seed(i)
-        mapping = find_mapping_random_guesses()
-        wasted_space = sum(len(item) for item in mapping.keys()) - sum(len(item) for item in mapping.values())
-        nums = [list(mapping.values()).count(item) for item in custom_insults]
-        if variance(nums) < best_wasted or best_wasted == -1:
-            best = i
-            best_wasted = variance(nums)
-
-        # print(f"Done in {time.perf_counter() - s:.3f}s")
-        # print(f"The variance is {variance(nums):.3f}, seed is {i}")
-        # print(f"Wasted space: {wasted_space}")
-        # print(nums)
-        # print()
-
-    print(f"Done in {time.perf_counter() - s:.3f}s\n")
-    print(f"Best seed: {best}")
-    random.seed(best)
-    mapping = find_mapping_random_guesses()
-    wasted_space = sum(len(item) for item in mapping.keys()) - sum(len(item) for item in mapping.values())
-    nums = [list(mapping.values()).count(item) for item in custom_insults]
-
-    print(f"The variance is {variance(nums):.3f}")
-    print(f"Wasted space: {wasted_space}")
-    print(nums)
-    print()
     exit(0)
 
 
@@ -297,15 +265,13 @@ def main() -> None:
         print("Error: Your amount of insults are too biiigg.. :3")
         exit(1)
 
-    with open("/usr/lib/sudo/sudoers.so.bak", "rb") as f:
+    with open("/usr/lib/sudo/sudoers.so", "rb") as f:
         content = f.read()
 
     # show_hist()
-    # find_least_space_wasted()
     # bruteforce_random_seed()
 
-    print("Generating the mapping... This might take a second\n")
-    mapping = find_mapping_random_guesses()
+    mapping = mapping_algorithm()
     mapping |= static_mapping
 
     mapping = {k: v.ljust(len(k)) for k, v in mapping.items()}

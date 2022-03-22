@@ -12,6 +12,6 @@ ln -fs "$HOME/.cache/sudo/sudoers.so.bak.$(date +%s)" "$HOME/.cache/sudo/sudoers
 sudo cp ./sudoers.so /usr/lib/sudo/sudoers.so &>/dev/null | cat
 
 # Remove the lectured file so the uwu-lecture prompt will appear again
-sudo rm /var/db/sudo/lectured/$USER
+sudo rm -f /var/db/sudo/lectured/$USER
 
 echo "Successfully installed!"
