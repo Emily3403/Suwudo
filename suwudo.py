@@ -152,10 +152,10 @@ all_insults = sorted([item for item in all_insults], key=len)
 stop_after_iterations = 45
 
 # Set the seed to something preselected. This will guarantee a good mapping.
-random.seed(1106)
+random.seed(8557)
 
 
-def find_mapping_random() -> Dict[bytes, bytes]:
+def find_mapping_random_improvement() -> Dict[bytes, bytes]:
     insult_nums = [0 for _ in range(len(custom_insults))]
     solution: Dict[int, Set[int]] = {i: set() for i in range(len(custom_insults))}
     back_mapping = {i: 0 for i in range(len(all_insults))}
@@ -197,43 +197,92 @@ def find_mapping_random() -> Dict[bytes, bytes]:
     return mapping
 
 
-def _wasted_space(seed: int) -> Tuple[int, int]:
-    random.seed(seed)
-    mapping = find_mapping_random()
-    return seed, sum(len(item) for item in mapping.keys()) - sum(len(item) for item in mapping.values())
+def find_mapping_random_guesses() -> Dict[bytes, bytes]:
+    assert len(custom_insults) < len(all_insults)
 
+    mapping: Dict[bytes, bytes] = {}
+    possible: List[int] = [i for i in range(len(custom_insults))]
+    cutoff = 0
+    weights = [1 for _ in range(len(custom_insults))]
+
+    for old in all_insults:
+        while cutoff < len(custom_insults):
+            if len(custom_insults[cutoff]) > len(old):
+                break
+            cutoff += 1
+
+        chosen_index = random.choices(possible[:cutoff], weights[:cutoff], k=1)[0]
+        weights[chosen_index] /= 5
+        mapping[old] = custom_insults[chosen_index]
+
+    return mapping
+
+
+def _wasted_space(seed: int) -> Tuple[int, int, int]:
+    random.seed(seed)
+    mapping = find_mapping_random_guesses()
+    lst = list(mapping.values())
+    nums = [lst.count(item) for item in custom_insults]
+    return seed, sum(len(item) for item in mapping.keys()) - sum(len(item) for item in mapping.values()), variance(nums)
+
+
+# Best: 753
+# Best var = 0.807
 
 def find_least_space_wasted() -> None:
     s = time.perf_counter()
     with Pool(16) as ex:
-        nums = ex.map(_wasted_space, range(3000))
+        nums = ex.map(_wasted_space, range(30000))
 
-    best = sorted(nums, key=lambda x: x[1])[0]
+
+    best = sorted(nums, key=lambda x: x[1] if 0.8 < x[2] < 0.82 else 999)[0]
     print(f"Done in {time.perf_counter() - s:.3f}s")
-    print(f"Best seed: {best[0]}, wasted: {best[1]}")
+    print(f"Seed is {best[0]}")
+
+    random.seed(best[0])
+    mapping = find_mapping_random_guesses()
+    wasted_space = sum(len(item) for item in mapping.keys()) - sum(len(item) for item in mapping.values())
+    nums = [list(mapping.values()).count(item) for item in custom_insults]
+
+    print(f"The variance is {variance(nums):.3f}")
+    print(f"Wasted space: {wasted_space}")
+    print(nums)
+
+    exit(0)
 
 
 def bruteforce_random_seed() -> None:
     best_wasted = -1
     best = 0
-    for i in range(10):
-        s = time.perf_counter()
+    s = time.perf_counter()
+    for i in range(10000):
+
         random.seed(i)
-        mapping = find_mapping_random()
+        mapping = find_mapping_random_guesses()
         wasted_space = sum(len(item) for item in mapping.keys()) - sum(len(item) for item in mapping.values())
-        if wasted_space < best_wasted or best_wasted == -1:
-            best = i
-            best_wasted = wasted_space
-
         nums = [list(mapping.values()).count(item) for item in custom_insults]
+        if variance(nums) < best_wasted or best_wasted == -1:
+            best = i
+            best_wasted = variance(nums)
 
-        print(f"Done in {time.perf_counter() - s:.3f}s")
-        print(f"The variance is {variance(nums):.3f}, seed is {i}")
-        print(f"Wasted space: {wasted_space}")
-        print(nums)
-        print()
+        # print(f"Done in {time.perf_counter() - s:.3f}s")
+        # print(f"The variance is {variance(nums):.3f}, seed is {i}")
+        # print(f"Wasted space: {wasted_space}")
+        # print(nums)
+        # print()
 
+    print(f"Done in {time.perf_counter() - s:.3f}s\n")
     print(f"Best seed: {best}")
+    random.seed(best)
+    mapping = find_mapping_random_guesses()
+    wasted_space = sum(len(item) for item in mapping.keys()) - sum(len(item) for item in mapping.values())
+    nums = [list(mapping.values()).count(item) for item in custom_insults]
+
+    print(f"The variance is {variance(nums):.3f}")
+    print(f"Wasted space: {wasted_space}")
+    print(nums)
+    print()
+    exit(0)
 
 
 def show_hist() -> None:
@@ -256,7 +305,7 @@ def main() -> None:
     # bruteforce_random_seed()
 
     print("Generating the mapping... This might take a second\n")
-    mapping = find_mapping_random()
+    mapping = find_mapping_random_guesses()
     mapping |= static_mapping
 
     mapping = {k: v.ljust(len(k)) for k, v in mapping.items()}
