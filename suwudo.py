@@ -299,6 +299,8 @@ def main() -> None:
     install_distro_package()
     import distro
 
+    print("AAAA")
+
     try:
         dist = distro.like()
         print(dist)
