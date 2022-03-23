@@ -305,18 +305,21 @@ def main() -> None:
         dist = distro.like() or distro.id()
         if dist == "arch":
             sudoers_path = "/usr/lib/sudo/sudoers.so"
-            pass
+            lectured_file = f"/var/db/sudo/lectured/{os.environ['USER']}"
 
         elif dist == "fedora":
             sudoers_path = "/usr/libexec/sudo/sudoers.so"
+            lectured_file = f"/var/db/sudo/lectured/{os.environ['USER']}"
 
         else:
             sudoers_path = "/usr/lib/sudo/sudoers.so"
+            lectured_file = f"/var/db/sudo/lectured/{os.environ['USER']}"
 
 
     except Exception:
         print("I cannot autodetect your linux distribution. I'm sticking with the default path.")
         sudoers_path = "/usr/lib/sudo/sudoers.so"
+        lectured_file = f"/var/db/sudo/lectured/{os.environ['USER']}"
 
     # Back up the file
     sudo_backup_path = os.path.join(os.path.expanduser("~"), ".cache", "sudo")
@@ -367,13 +370,15 @@ def main() -> None:
     with open("./sudoers.so", "wb") as f:
         f.write(content)
 
+    # Install the file and remove lecture prompt
+    os.system(f"sudo cp ./sudoers.so {sudoers_path}")
+    os.system(f"sudo rm -f {lectured_file}")
+
 
 # Future ideas
 # - sudo terminates after 3 wrong attempts
 # - Bring this to the arch user repository
 # - ansible config
-
-# TODO: Test this on different VM's
 
 if __name__ == '__main__':
     main()
