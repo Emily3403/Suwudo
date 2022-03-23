@@ -299,10 +299,8 @@ def main() -> None:
     install_distro_package()
     import distro
 
-    print("AAAA")
-
     try:
-        dist = distro.like()
+        dist = distro.like() or distro.id()
         print(dist)
         if distro == "arch":
             sudoers_path = "/usr/lib/sudo/sudoers.so"
