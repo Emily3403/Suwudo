@@ -368,6 +368,8 @@ def main() -> None:
     os.system(f"sudo cp ./sudoers.so {sudoers_path}")
     os.system(f"sudo rm -f {lectured_file} &>/dev/null | cat")
 
+    print("Installed sucessfully")
+
 
 # Future ideas
 # - sudo terminates after 3 wrong attempts
