@@ -1,25 +1,20 @@
 #!/usr/bin/env python3
 
 # These may be edited to your liking
-import json
-import math
 import os
 import platform
 import random
-import re
 import shutil
 import subprocess
 import sys
 import time
-from collections import defaultdict
 from datetime import datetime
 from multiprocessing import Pool
 from statistics import variance
-from typing import DefaultDict, Dict, List, Set, Tuple
+from typing import Dict, List, Set, Tuple
 
 # This is the list of custom insults. You may replace any one of them.
 # Unicode etc. should work if your terminal supports it. Mine does.
-
 
 _custom_insults: List[str] = [
     # Default insults
@@ -327,7 +322,7 @@ def main() -> None:
 
     os.symlink(sudo_backup_file_time, os.path.join(sudo_backup_path, "sudoers.so.bak"))
 
-    # Read the file
+    # Now the real fun begins
     with open(sudoers_path, "rb") as f:
         content = f.read()
 
@@ -355,11 +350,11 @@ def main() -> None:
 
     new_nums = {custom_insult.decode(): content.count(custom_insult) for custom_insult in custom_insults}
 
-    # print("\nI've achieved the following distribution:\n")
-    # print("{")
-    # for st, count in new_nums.items():
-    #     print(f"    {st}: {count},")
-    # print("}")
+    print("\nI've achieved the following distribution:\n")
+    print("{")
+    for st, count in new_nums.items():
+        print(f"    {st}: {count},")
+    print("}")
 
     with open("./sudoers.so", "wb") as f:
         f.write(content)
@@ -368,7 +363,7 @@ def main() -> None:
     os.system(f"sudo cp ./sudoers.so {sudoers_path}")
     os.system(f"sudo rm -f {lectured_file} &>/dev/null | cat")
 
-    print("Installed sucessfully")
+    print("Installed successfully")
 
 
 # Future ideas
