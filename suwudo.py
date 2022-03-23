@@ -3,8 +3,11 @@
 # These may be edited to your liking
 import json
 import math
+import os
+import platform
 import random
 import re
+import subprocess
 import sys
 import time
 from collections import defaultdict
@@ -14,6 +17,7 @@ from typing import DefaultDict, Dict, List, Set, Tuple
 
 # This is the list of custom insults. You may replace any one of them.
 # Unicode etc. should work if your terminal supports it. Mine does.
+
 
 _custom_insults: List[str] = [
     # Default insults
@@ -261,11 +265,31 @@ def show_hist() -> None:
 
 
 def main() -> None:
-    if len(custom_insults) > len(all_insults):
-        print("Error: Your amount of insults are too biiigg.. :3")
+    if platform.system() == "Windows":
+        print("Your operating system is not supported.")
         exit(1)
 
-    with open("/usr/lib/sudo/sudoers.so", "rb") as f:
+    try:
+        out = subprocess.check_output(["lsb_release", "-a"]).decode()
+
+        distro = re.findall("Distributor ID:\t(.*)", out)[0]
+        print(f"Detected {distro}")
+        if distro in {"Garuda", "Arch"}:
+            sudoers_path = "/usr/lib/sudo/sudoers.so"
+            pass
+
+        elif distro == "Fedora":
+            sudoers_path = "/usr/libexec/sudo/sudoers.so"
+
+        else:
+            sudoers_path = "/usr/lib/sudo/sudoers.so"
+
+
+    except Exception:
+        print("I cannot autodetect your linux distribution. I'm sticking with the default path.")
+        sudoers_path = "/usr/lib/sudo/sudoers.so"
+
+    with open(sudoers_path, "rb") as f:
         content = f.read()
 
     # show_hist()
