@@ -301,12 +301,11 @@ def main() -> None:
 
     try:
         dist = distro.like() or distro.id()
-        print(dist)
-        if distro == "arch":
+        if dist == "arch":
             sudoers_path = "/usr/lib/sudo/sudoers.so"
             pass
 
-        elif distro == "fedora":
+        elif dist == "fedora":
             sudoers_path = "/usr/libexec/sudo/sudoers.so"
 
         else:
