@@ -39,7 +39,7 @@ Install with the following
 ```shell
 git clone https://github.com/Emily3403/Suwudo
 cd Suwudo
-./install.sh
+./suwudo.py
 ```
 
 You will also have to enable insults for `sudo` if you haven't already.
