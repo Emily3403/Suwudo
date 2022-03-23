@@ -366,7 +366,7 @@ def main() -> None:
 
     # Install the file and remove lecture prompt
     os.system(f"sudo cp ./sudoers.so {sudoers_path}")
-    os.system(f"sudo rm -f {lectured_file}")
+    os.system(f"sudo rm -f {lectured_file} &>/dev/null | cat")
 
 
 # Future ideas
