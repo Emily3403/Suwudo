@@ -265,6 +265,7 @@ def show_hist() -> None:
     plt.hist([len(item) for item in custom_insults], color="r")
     plt.show()
 
+
 def install_distro_package() -> None:
     try:
         import distro
@@ -293,6 +294,7 @@ def install_distro_package() -> None:
             print("\033[1;91mError!\033[0m Something went wrong while installing the package. Aborting!")
             exit(exit_code)
 
+
 def main() -> None:
     if platform.system() == "Windows":
         print("Your operating system is not supported.")
@@ -301,25 +303,17 @@ def main() -> None:
     install_distro_package()
     import distro
 
-    try:
-        dist = distro.like() or distro.id()
-        if dist == "arch":
-            sudoers_path = "/usr/lib/sudo/sudoers.so"
-            lectured_file = f"/var/db/sudo/lectured/{os.environ['USER']}"
+    # Distro agnostic sudoers path
+    sudoers_path = "/usr/lib/sudo/sudoers.so"
+    lectured_file = f"/var/db/sudo/lectured/{os.environ['USER']}"
 
-        elif dist == "fedora":
-            sudoers_path = "/usr/libexec/sudo/sudoers.so"
-            lectured_file = f"/var/db/sudo/lectured/{os.environ['USER']}"
+    dist = distro.like() or distro.id()
 
-        else:
-            sudoers_path = "/usr/lib/sudo/sudoers.so"
-            lectured_file = f"/var/db/sudo/lectured/{os.environ['USER']}"
+    if dist == "fedora":
+        sudoers_path = "/usr/libexec/sudo/sudoers.so"
 
-
-    except Exception:
-        print("I cannot autodetect your linux distribution. I'm sticking with the default path.")
-        sudoers_path = "/usr/lib/sudo/sudoers.so"
-        lectured_file = f"/var/db/sudo/lectured/{os.environ['USER']}"
+    elif dist == "debian":
+        lectured_file = f"/var/lib/sudo/lectured/{os.environ['USER']}"
 
     # Back up the file
     sudo_backup_path = os.path.join(os.path.expanduser("~"), ".cache", "sudo")
