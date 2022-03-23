@@ -263,22 +263,50 @@ def show_hist() -> None:
     plt.hist([len(item) for item in custom_insults], color="r")
     plt.show()
 
+def install_distro_package() -> None:
+    try:
+        import distro
+    except ImportError:
+
+        print("""You linux distribution may have a deviating path for the `sudoers.so` file.
+    If your distribution is in the following you *will* have to install it for the executable to be installed.
+    
+    {"Fedora"}
+    
+    If you do not install the package I will go with the default path.
+    Is that okay? [y/n]""")
+
+        while True:
+            choice = input()
+            if choice in {"y", "n"}:
+                break
+            print('You choice is not in the expected: {"y", "n"}.')
+
+        if choice == "n":
+            print("Alright. I will stick with `/usr/lib/sudo/sudoers.so` for the path.")
+            return
+
+        exit_code = subprocess.check_call([sys.executable, "-m", "pip", "install", "distro"])
+        if exit_code:
+            print("\033[1;91mError!\033[0m Something went wrong while installing the package. Aborting!")
+            exit(exit_code)
 
 def main() -> None:
     if platform.system() == "Windows":
         print("Your operating system is not supported.")
         exit(1)
 
-    try:
-        out = subprocess.check_output(["lsb_release", "-a"]).decode()
+    install_distro_package()
+    import distro
 
-        distro = re.findall("Distributor ID:\t(.*)", out)[0]
-        print(f"Detected {distro}")
-        if distro in {"Garuda", "Arch"}:
+    try:
+        dist = distro.like()
+        print(dist)
+        if distro == "arch":
             sudoers_path = "/usr/lib/sudo/sudoers.so"
             pass
 
-        elif distro == "Fedora":
+        elif distro == "fedora":
             sudoers_path = "/usr/libexec/sudo/sudoers.so"
 
         else:
@@ -316,11 +344,11 @@ def main() -> None:
 
     new_nums = {custom_insult.decode(): content.count(custom_insult) for custom_insult in custom_insults}
 
-    print("\nI've achieved the following distribution:\n")
-    print("{")
-    for st, count in new_nums.items():
-        print(f"    {st}: {count},")
-    print("}")
+    # print("\nI've achieved the following distribution:\n")
+    # print("{")
+    # for st, count in new_nums.items():
+    #     print(f"    {st}: {count},")
+    # print("}")
 
     with open("./sudoers.so", "wb") as f:
         f.write(content)
