@@ -7,10 +7,12 @@ import os
 import platform
 import random
 import re
+import shutil
 import subprocess
 import sys
 import time
 from collections import defaultdict
+from datetime import datetime
 from multiprocessing import Pool
 from statistics import variance
 from typing import DefaultDict, Dict, List, Set, Tuple
@@ -316,6 +318,19 @@ def main() -> None:
         print("I cannot autodetect your linux distribution. I'm sticking with the default path.")
         sudoers_path = "/usr/lib/sudo/sudoers.so"
 
+    # Back up the file
+    sudo_backup_path = os.path.join(os.path.expanduser("~"), ".cache", "sudo")
+    sudo_backup_file_time = os.path.join(sudo_backup_path, "sudoers.so.bak." + str(int(datetime.now().timestamp())))
+    sudo_backup_file = os.path.join(sudo_backup_path, "sudoers.so.bak")
+
+    os.makedirs(sudo_backup_path, exist_ok=True)
+    shutil.copyfile(sudoers_path, sudo_backup_file_time)
+    if os.path.exists(sudo_backup_file):
+        os.unlink(sudo_backup_file)
+
+    os.symlink(sudo_backup_file_time, os.path.join(sudo_backup_path, "sudoers.so.bak"))
+
+    # Read the file
     with open(sudoers_path, "rb") as f:
         content = f.read()
 
