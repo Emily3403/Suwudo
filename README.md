@@ -27,7 +27,7 @@ sudo su
 Now just leave it open until the installation ends. If anything breaks, you can recover by executing
 
 ```shell
-cp /home/{your username}/.cache/sudo/sudoers.so.bak /usr/lib/sudo/sudoers.so
+cp /home/$USER/.cache/sudo/sudoers.so.bak /usr/lib/sudo/sudoers.so
 ```
 
 You could of course also use other tools like `doas`.
